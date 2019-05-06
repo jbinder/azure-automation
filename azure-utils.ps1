@@ -47,17 +47,19 @@ function Get-AppSettings($resourceGroupName, $appName)
 
 <#
 .SYNOPSIS
-Create a SQL user with password as owner of a database.
+Create a SQL user with password for an existing database.
 .PARAMETER connectionString
 The connection string of the database for which the user should be created.
 .PARAMETER dbUsername
 The name of the user to be created.
 .PARAMETER dbPassword
 The password of the user to be created.
+.PARAMETER role
+The role which the user should be assigned to, e.g. db_owner, db_datareader, db_datawriter.
 .LINK
 https://blog.kloud.com.au/2016/04/12/creating-accounts-on-azure-sql-database-through-powershell-automation/
 #>
-function Create-DbUser($connectionString, $dbUsername, $dbPassword)
+function Create-DbUser($connectionString, $dbUsername, $dbPassword, $role)
 {
 	$connection = New-Object -TypeName System.Data.SqlClient.SqlConnection($connectionString)
 	
@@ -68,13 +70,15 @@ function Create-DbUser($connectionString, $dbUsername, $dbPassword)
 	$password = New-Object -TypeName System.Data.SqlClient.SqlParameter("@password", $dbPassword)
 	$commandCreateUser.Parameters.Add($password)
 	
-	$queryAddOwnerRole = "EXECUTE('EXEC sp_addrolemember ''db_owner'', ''' + @username + '''')"
-	$commandAddOwnerRole = New-Object -TypeName System.Data.SqlClient.SqlCommand($queryAddOwnerRole, $connection)
-	$usernameOwnerRole = New-Object -TypeName System.Data.SqlClient.SqlParameter("@username", $dbUsername)
-	$commandAddOwnerRole.Parameters.Add($usernameOwnerRole)
+	$queryAddRole = "EXECUTE('EXEC sp_addrolemember ''' + @role + ''', ''' + @username + '''')"
+	$commandAddRole = New-Object -TypeName System.Data.SqlClient.SqlCommand($queryAddRole, $connection)
+	$paramUsername = New-Object -TypeName System.Data.SqlClient.SqlParameter("@username", $dbUsername)
+	$commandAddRole.Parameters.Add($paramUsername)
+	$paramRole = New-Object -TypeName System.Data.SqlClient.SqlParameter("@role", $role)
+	$commandAddRole.Parameters.Add($paramRole)
 	
 	$connection.Open()
 	$commandCreateUser.ExecuteNonQuery()
-	$commandAddOwnerRole.ExecuteNonQuery()
+	$commandAddRole.ExecuteNonQuery()
 	$connection.Close()
 }

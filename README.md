@@ -15,4 +15,5 @@ References
 ----------
 
 [1] https://docs.microsoft.com/en-us/powershell/azure/
+
 [2] https://github.com/PowerShell/PowerShell#get-powershell
