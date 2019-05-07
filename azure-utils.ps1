@@ -11,6 +11,42 @@ function Login($tenantId)
 
 <#
 .SYNOPSIS
+Create a database.
+.PARAMETER resourceGroupName
+The name of the resource group of the database.
+.PARAMETER dbServerName
+The name of the database server.
+.PARAMETER dbName
+The name of the database.
+.PARAMETER dbPricingTier
+The pricing tier of the database, e.g. "Basic".
+#>
+function Create-Database($resourceGroupName, $dbServerName, $dbName, $dbPricingTier)
+{
+	New-AzSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $dbServerName -DatabaseName $dbName -RequestedServiceObjectiveName $dbPricingTier
+}
+
+<#
+.SYNOPSIS
+Create a web app.
+.PARAMETER resourceGroupName
+The name of the resource group of the database.
+.PARAMETER appName
+The name of the app.
+.PARAMETER appLocation
+The location of the app, e.g. 'West Europe'.
+.PARAMETER appServicePlan
+The service plan of the app.
+.LINK
+https://azure.microsoft.com/en-us/global-infrastructure/locations/
+#>
+function Create-App($resourceGroupName, $appName, $appLocation, $appServicePlan)
+{
+	New-AzWebApp -ResourceGroupName $resourceGroupName -Name $appName -Location $appLocation -AppServicePlan $appServicePlan
+}
+
+<#
+.SYNOPSIS
 Set application settings of an app.
 .PARAMETER resourceGroupName
 The name of the app's resource group.
